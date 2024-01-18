@@ -1,0 +1,26 @@
+name: Setup jcli
+description: Setup jcli with specified version
+inputs:
+  version:
+    description: The jcli version
+    required: true
+  jet-endpoint:
+    description: The Jet API endpoint URL
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: robinraju/release-downloader@v1.8
+      with:
+        repository: byzanteam/jcli
+        tag: v${{ inputs.version }}
+        fileName: jcli-x86_64-unknown-linux-gnu
+    - name: Move jcli
+      shell: bash
+      run: |
+        mv jcli-x86_64-unknown-linux-gnu jcli
+    - name: Setup jcli configuration
+      shell: bash
+      run: |
+        mkdir -p ~/.config/jcli
+        echo '{"jetEndpoint": "${{ inputs.jet-endpoint }}"}' > ~/.config/jcli/config.json
