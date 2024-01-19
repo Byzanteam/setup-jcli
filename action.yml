@@ -4,23 +4,20 @@ inputs:
   version:
     description: The jcli version
     required: true
-  latest:
-    description: Use the latest version
-    default: 'false'
   jet-endpoint:
     description: The Jet API endpoint URL
     required: true
 runs:
   using: composite
   steps:
-    - if: ${{ inputs.latest == 'true' }}
+    - if: ${{ inputs.version == 'latest' }}
       uses: robinraju/release-downloader@v1.8
       with:
         repository: byzanteam/jcli
         latest: true
         fileName: jcli-${{ runner.os == 'Linux' && 'x86_64-unknown-linux-gnu' || (runner.os == 'macOS' && ((runner.arch == 'X64' && 'x86_64-apple-darwin') || (runner.arch == 'ARM64' && 'aarch64-apple-darwin'))) }}
 
-    - if: ${{ inputs.latest == 'false' }}
+    - if: ${{ inputs.version != 'latest' }}
       uses: robinraju/release-downloader@v1.8
       with:
         repository: byzanteam/jcli
