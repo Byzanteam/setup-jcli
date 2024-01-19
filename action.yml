@@ -4,21 +4,36 @@ inputs:
   version:
     description: The jcli version
     required: true
+  latest:
+    description: Use the latest version
+    default: 'false'
   jet-endpoint:
     description: The Jet API endpoint URL
     required: true
 runs:
   using: composite
   steps:
-    - uses: robinraju/release-downloader@v1.8
+    - if: ${{ inputs.latest == 'true' }}
+      uses: robinraju/release-downloader@v1.8
       with:
         repository: byzanteam/jcli
-        tag: v${{ inputs.version }}
-        fileName: jcli-x86_64-unknown-linux-gnu
+        latest: true
+        fileName: jcli-${{ runner.os == 'Linux' && 'x86_64-unknown-linux-gnu' || (runner.os == 'macOS' && ((runner.arch == 'X64' && 'x86_64-apple-darwin') || (runner.arch == 'ARM64' && 'aarch64-apple-darwin'))) }}
+
+    - if: ${{ inputs.latest == 'false' }}
+      uses: robinraju/release-downloader@v1.8
+      with:
+        repository: byzanteam/jcli
+        tag: ${{ inputs.version }}
+        fileName: jcli-${{ runner.os == 'Linux' && 'x86_64-unknown-linux-gnu' || (runner.os == 'macOS' && ((runner.arch == 'X64' && 'x86_64-apple-darwin') || (runner.arch == 'ARM64' && 'aarch64-apple-darwin'))) }}
+
     - name: Move jcli
       shell: bash
       run: |
-        mv jcli-x86_64-unknown-linux-gnu jcli
+        mkdir -p $HOME/.local/bin
+        mv jcli-x86_64-unknown-linux-gnu $HOME/.local/bin
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+
     - name: Setup jcli configuration
       shell: bash
       run: |
