@@ -10,25 +10,32 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Calculate jcli fileName
+      shell: bash
+      run: |
+        os_part="${{ runner.os == 'Linux' && 'unknown-linux-gnu' || 'apple-darwin' }}"
+        arch_part="${{ runner.arch == 'X64' && 'x86_64' || 'aarch64' }}"
+        echo "JCLI_FILE_NAME=jcli-$arch_part-$os_part" >> $GITHUB_ENV
+
     - if: ${{ inputs.version == 'latest' }}
       uses: robinraju/release-downloader@v1.8
       with:
         repository: byzanteam/jcli
         latest: true
-        fileName: jcli-${{ runner.os == 'Linux' && 'x86_64-unknown-linux-gnu' || (runner.os == 'macOS' && ((runner.arch == 'X64' && 'x86_64-apple-darwin') || (runner.arch == 'ARM64' && 'aarch64-apple-darwin'))) }}
+        fileName: ${{ env.JCLI_FILE_NAME }}
 
     - if: ${{ inputs.version != 'latest' }}
       uses: robinraju/release-downloader@v1.8
       with:
         repository: byzanteam/jcli
         tag: ${{ inputs.version }}
-        fileName: jcli-${{ runner.os == 'Linux' && 'x86_64-unknown-linux-gnu' || (runner.os == 'macOS' && ((runner.arch == 'X64' && 'x86_64-apple-darwin') || (runner.arch == 'ARM64' && 'aarch64-apple-darwin'))) }}
+        fileName: ${{ env.JCLI_FILE_NAME }}
 
     - name: Move jcli
       shell: bash
       run: |
         mkdir -p $HOME/.local/bin
-        mv jcli-x86_64-unknown-linux-gnu $HOME/.local/bin
+        mv ${{ env.JCLI_FILE_NAME }} $HOME/.local/bin/jcli
         echo "$HOME/.local/bin" >> $GITHUB_PATH
 
     - name: Setup jcli configuration
