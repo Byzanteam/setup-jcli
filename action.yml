@@ -36,7 +36,7 @@ runs:
       run: |
         mkdir -p $HOME/.local/bin
         mv ${{ env.JCLI_FILE_NAME }} $HOME/.local/bin/jcli
-        chmod +x $HOME/.local/bin/jcli/${{ env.JCLI_FILE_NAME }}
+        chmod +x $HOME/.local/bin/jcli
         echo "$HOME/.local/bin" >> $GITHUB_PATH
 
     - name: Setup jcli configuration
