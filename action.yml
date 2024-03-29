@@ -25,7 +25,7 @@ runs:
         fileName: ${{ env.JCLI_FILE_NAME }}
 
     - if: ${{ inputs.version != 'latest' }}
-      uses: robinraju/release-downloader@v1.8
+      uses: robinraju/release-downloader@v1.9
       with:
         repository: byzanteam/jcli
         tag: ${{ inputs.version }}
