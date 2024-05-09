@@ -15,7 +15,7 @@ runs:
       run: |
         os_part="${{ runner.os == 'Linux' && 'unknown-linux-gnu' || 'apple-darwin' }}"
         arch_part="${{ runner.arch == 'X64' && 'x86_64' || 'aarch64' }}"
-        echo "JCLI_FILE_NAME=jcli-$arch_part-$os_part" >> $GITHUB_ENV
+        echo "JCLI_FILE_NAME=jcli-$arch_part-$os_part.tar.gz" >> $GITHUB_ENV
 
     - if: ${{ inputs.version == 'latest' }}
       uses: robinraju/release-downloader@v1.8
@@ -31,11 +31,12 @@ runs:
         tag: ${{ inputs.version }}
         fileName: ${{ env.JCLI_FILE_NAME }}
 
-    - name: Move jcli
+    - name: Extract and Move jcli
       shell: bash
       run: |
+        tar -xzf ${{ env.JCLI_FILE_NAME }}
         mkdir -p $HOME/.local/bin
-        mv ${{ env.JCLI_FILE_NAME }} $HOME/.local/bin/jcli
+        mv jcli $HOME/.local/bin/jcli
         chmod +x $HOME/.local/bin/jcli
         echo "$HOME/.local/bin" >> $GITHUB_PATH
 
