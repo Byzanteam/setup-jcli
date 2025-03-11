@@ -15,7 +15,7 @@ runs:
       run: |
         os_part="${{ runner.os == 'Linux' && 'unknown-linux-gnu' || 'apple-darwin' }}"
         arch_part="${{ runner.arch == 'X64' && 'x86_64' || 'aarch64' }}"
-        echo "JCLI_FILE_NAME=jcli-$arch_part-$os_part" >> $GITHUB_ENV
+        echo "JCLI_FILE_NAME=jcli-$arch_part-$os_part" >> "$GITHUB_ENV"
 
     - if: ${{ inputs.version == 'latest' }}
       uses: robinraju/release-downloader@v1.8
@@ -39,8 +39,17 @@ runs:
         chmod +x $HOME/.local/bin/jcli
         echo "$HOME/.local/bin" >> $GITHUB_PATH
 
+    - name: Set LOGGER_LEVEL
+      shell: bash
+      run: |
+        if [ "$ACTIONS_STEP_DEBUG" == 'true' ]; then
+          echo "LOGGER_LEVEL=DEBUG" >> "$GITHUB_ENV"
+        else
+          echo "LOGGER_LEVEL=INFO" >> "$GITHUB_ENV"
+        fi
+
     - name: Setup jcli configuration
       shell: bash
       run: |
         mkdir -p ~/.config/jcli
-        echo '{"jetEndpoint": "${{ inputs.jet-endpoint }}"}' > ~/.config/jcli/config.json
+        echo '{"jetEndpoint": "${{ inputs.jet-endpoint }}","logLevel":"$LOGGER_LEVEL"}' > ~/.config/jcli/config.json
