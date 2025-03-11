@@ -52,4 +52,4 @@ runs:
       shell: bash
       run: |
         mkdir -p ~/.config/jcli
-        echo '{"jetEndpoint": "${{ inputs.jet-endpoint }}","logLevel":"$LOGGER_LEVEL"}' > ~/.config/jcli/config.json
+        echo '{"jetEndpoint": "${{ inputs.jet-endpoint }}","logLevel":"${{ env.LOGGER_LEVEL }}"}' > ~/.config/jcli/config.json
